@@ -9,7 +9,7 @@ XML-GPT is a simple yet capable GPT that can be quickly and easily trained.
 
 # Required Dependencies
 
--   `PyTorch`<sub>†<sub>
+-   `PyTorch`<sup>†<sup>
 -   `Numpy`
 -   `transformers` for huggingface transformers.
 -   `datasets` for loading in datasets.
@@ -30,7 +30,7 @@ pip install numpy transformers datasets tiktokem tqdm mlx
 
 
 
-<sub>†<sub> = install either the default version of PyTorch if using the main branch and Cuda version if using cuda-old/cuda branch.
+<sup>†<sup> = install either the default version of PyTorch if using the main branch and Cuda version if using cuda-old/cuda branch.
 # Linux Only • How to add support for AMD's ROCm
 
 1. First of all make sure that you have the latest version of python installed.
