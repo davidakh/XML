@@ -19,10 +19,10 @@ XML-GPT is a simple yet capable GPT that can be quickly and easily trained.
 To install these dependencies enter this code into your terminal:
 
 **With Default PyTorch**
-```
 
 
-$^1$ = install either the default version of PyTorch if using the main branch and Cuda version if using cuda-old/cuda branch.
+
+1 = install either the default version of PyTorch if using the main branch and Cuda version if using cuda-old/cuda branch.
 # Linux Only • How to add support for AMD's ROCm
 
 1. First of all make sure that you have the latest version of python installed.
