@@ -188,12 +188,15 @@ elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
     device = "mps"
 print(f"using device: {device}")
 
+# if on mac keep 'mps' enabled for better proformance, else replace with 'cuda' if you have a CUDA capable GPU.
 torch.manual_seed(1337)
-if torch.cuda.is_available():
-    torch.cuda.manual_seed(1337)
+if torch.mps.is_available():
+    torch.mps.manual_seed(1337)
 
+# increase batch size for faster training if GPU memory allows. if using Apple Silicon keep settings the same for best performance.
+train_loader = DataLoader(B=4, T=256)
 
-train_loader = DataLoader(B=16, T=1024)
+torch.set_float32_matmul_precision('high')
 
 model = GPT(GPTConfig())
 model.to(device)
@@ -207,9 +210,11 @@ for i in range(50):
     logits, loss = model(x, y)
     loss.backward()
     optimizer.step()
-    torch.cuda.synchronize()
+    # remove '#' to enable sycnronization if using CUDA. keep disabled if using MPS will cause crashes.
+    # torch.cuda.synchronize()
     t1 = time.time()
     dt = (t1 - t0)*1000
-    print(f"step {i}, loss: {loss.item()}, dt: {dt:.2f}ms")
+    tokens_per_sec = (train_loader.B * train_loader.T) / (t1 - t0)
+    print(f"step {i}, loss: {loss.item()}, dt: {dt:.2f}ms, tok/sec: {tokens_per_sec:.2f}")
 
 import sys; sys.exit(0)
