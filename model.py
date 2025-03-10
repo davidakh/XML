@@ -196,18 +196,18 @@ if torch.mps.is_available():
 # increase batch size for faster training if GPU memory allows. if using Apple Silicon keep settings the same for best performance.
 train_loader = DataLoader(B=4, T=256)
 
-torch.set_float32_matmul_precision('high')
-
 model = GPT(GPTConfig())
 model.to(device)
+model = torch.compile(model, backend="aot_eager")
 
 optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4)
 for i in range(50):
     t0 = time.time()
     x, y = train_loader.next_batch()
-    x, y = x.to(device), y.to(device)
+    x, y = x.to(device, dtype=torch.int64), y.to(device, dtype=torch.int64)
     optimizer.zero_grad()
-    logits, loss = model(x, y)
+    with torch.autocast(device_type=device, dtype=torch.bfloat16):
+        logits, loss = model(x, y)
     loss.backward()
     optimizer.step()
     # remove '#' to enable sycnronization if using CUDA. keep disabled if using MPS will cause crashes.
