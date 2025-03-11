@@ -216,8 +216,16 @@ torch.manual_seed(1337)
 if torch.mps.is_available():
     torch.mps.manual_seed(1337)
 
+total_batch_size = 524288
+B = 4
+T = 256
+assert total_batch_size % (B * T) == 0, "make sure total_batch_size is divisible by B * T"
+grad_accum_steps = total_batch_size // (B * T)
+print(f"total desired batch size: {total_batch_size}")
+print(f"=> calculated gradient accumalation steps: {grad_accum_steps}")
+
 # increase batch size for faster training if GPU memory allows. if using Apple Silicon keep settings the same for best performance.
-train_loader = DataLoader(B=4, T=256)
+train_loader = DataLoader(B=B, T=T)
 
 model = GPT(GPTConfig(vocab_size=50304))
 model.to(device)
@@ -239,6 +247,7 @@ def get_lr(it):
 
 optimizer = torch.optim.AdamW(model.parameters(), lr=6e-4, betas=(0.9, 0.95), eps=1e-8)
 # optimizer = model.configure_optimizers(weight_decay=0.1, learning_rate=6e-4, device=device)
+
 for step in range(max_steps):
     t0 = time.time()
     x, y = train_loader.next_batch()
